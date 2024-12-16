@@ -1,3 +1,6 @@
+using BackendAPI.Interface;
+using BackendAPI.Model;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendAPI.Controllers;
@@ -7,7 +10,6 @@ namespace BackendAPI.Controllers;
 
 public class UserController
 {
-    private readonly E2EDemoDbContext _context;
     private readonly IUserRepository _userRepository;
     
     public UserController(E2EDemoDbContext context, IUserRepository userRepository)
@@ -45,7 +47,7 @@ public class UserController
         }
         catch (Exception ex)
         {
-            // Handle unexpected exceptions
+            // Handle unexpected excepœtions
             return StatusCode(500, new { Message = "An unexpected error occurred. Please try again later." });
         }
 
