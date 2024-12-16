@@ -8,13 +8,12 @@ namespace BackendAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 
-public class UserController
+public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
     
-    public UserController(E2EDemoDbContext context, IUserRepository userRepository)
+    public UserController(IUserRepository userRepository)
     {
-        _context = context;
         _userRepository = userRepository;
     }
 
