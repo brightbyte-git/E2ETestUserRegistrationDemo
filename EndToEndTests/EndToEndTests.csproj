@@ -20,4 +20,11 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Fixtures\" />
+      <Folder Include="Helpers\" />
+      <Folder Include="mssql_scripts\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+
 </Project>
