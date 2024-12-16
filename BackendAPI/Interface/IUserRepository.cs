@@ -1,6 +1,9 @@
+using BackendAPI.Model;
+
 namespace BackendAPI.Interface;
 
-public class IUserRepository
+public interface IUserRepository
 {
-    
+    Task<bool> RegisterUserAsync(UserRegistrationDto registrationDto);
+
 }
