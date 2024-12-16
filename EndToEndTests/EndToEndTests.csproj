@@ -23,9 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\" />
       <Folder Include="mssql_scripts\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
     <ItemGroup>
