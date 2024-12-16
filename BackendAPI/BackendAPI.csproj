@@ -15,7 +15,6 @@
     <ItemGroup>
       <Folder Include="Interface\" />
       <Folder Include="Migrations\" />
-      <Folder Include="Model\" />
       <Folder Include="Repository\" />
     </ItemGroup>
 

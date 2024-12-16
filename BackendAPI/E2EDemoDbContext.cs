@@ -1,3 +1,4 @@
+using BackendAPI.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackendAPI;
