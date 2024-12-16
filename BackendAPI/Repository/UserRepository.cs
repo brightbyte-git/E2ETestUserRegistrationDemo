@@ -1,3 +1,7 @@
+using BackendAPI.Interface;
+using BackendAPI.Model;
+using Microsoft.EntityFrameworkCore;
+
 namespace BackendAPI.Repository;
 
 public class UserRepository : IUserRepository
