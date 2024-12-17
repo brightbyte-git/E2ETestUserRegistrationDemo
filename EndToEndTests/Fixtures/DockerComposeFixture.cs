@@ -9,7 +9,6 @@ public class DockerComposeFixture
     {
         _containerHealthCheck = new ContainerHealthCheck();
         StartDockerCompose();
-        WaitForBackend();
         WaitForSqlServer();
     }
     
@@ -40,32 +39,6 @@ public class DockerComposeFixture
         {
             throw new Exception("Docker Compose failed:\n" + process.StandardError.ReadToEnd());
         }
-    }
-
-    private void WaitForBackend()
-    {
-        using var httpClient = new HttpClient();
-        var maxRetries = 10;
-        var retryCount = 0;
-
-        while (retryCount < maxRetries)
-        {
-            try
-            {
-                var response = httpClient.GetAsync("http://localhost:5182/swagger/index.html").Result;
-                if (response.IsSuccessStatusCode) return;
-            }
-            catch(Exception ex)
-            {
-                // Ignore exceptions during retries
-                throw new Exception($"Docker Compose failed:\n{ex.Message}");
-            }
-
-            retryCount++;
-            Thread.Sleep(1000); // Wait 1 second between retries
-        }
-
-        throw new Exception("Backend service did not become healthy within the timeout period.");
     }
     
     private void WaitForSqlServer()

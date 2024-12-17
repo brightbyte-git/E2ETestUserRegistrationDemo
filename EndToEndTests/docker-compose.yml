@@ -1,0 +1,60 @@
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: test-docker-sql-server
+    environment:
+      SA_PASSWORD: "VeryStr0ngP@ssw0rd"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1432:1433"
+    volumes:
+      - sql_server:/var/opt/mssql
+    restart: no
+    hostname: db
+  
+  sqlcmd:
+    image: mcr.microsoft.com/mssql-tools:latest
+    container_name: sql-cmd-container
+    stdin_open: true
+    platform: linux/amd64
+    volumes:
+      - ./mssql_scripts:/mssql_scripts
+      - ./check-sql.sh:/check-sql.sh
+    command: >
+      bash -c '
+      chmod +x /check-sql.sh && 
+      /check-sql.sh /opt/mssql-tools/bin/sqlcmd -S db,1433 -U sa -P "VeryStr0ngP@ssw0rd" -d master -i mssql_scripts/init.sql &&
+      echo "All done!";
+      '
+    restart: no
+  
+  backend:
+    build:
+      context: ../  # Current directory (where docker-compose.yml is)
+      dockerfile: Dockerfile  # Reference to the Dockerfile in the same directory
+    ports:
+      - "5182:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=TestE2EDemoDatabase;User Id=sa;Password=VeryStr0ngP@ssw0rd;Encrypt=False;TrustServerCertificate=True;MultipleActiveResultSets=true"
+    depends_on:
+      - db
+  
+  frontend:
+    build:
+      context: ../frontend  # Directory containing the React app
+      dockerfile: Dockerfile  # Dockerfile for the React app
+    ports:
+      - "3000:3000"  # Expose the React development server
+    stdin_open: true
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ../frontend:/app  # Mount the React app for live editing
+    command: npm start  # Start the React development server
+
+volumes:
+  sql_server:
