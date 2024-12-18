@@ -1,4 +1,3 @@
-
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -32,10 +31,10 @@ services:
   
   backend:
     build:
-      context: ../  # Current directory (where docker-compose.yml is)
+      context: ../  # Root directory of overall project
       dockerfile: Dockerfile  # Reference to the Dockerfile in the same directory
     ports:
-      - "5182:8080"
+      - "5003:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__DefaultConnection: "Server=db,1433;Database=TestE2EDemoDatabase;User Id=sa;Password=VeryStr0ngP@ssw0rd;Encrypt=False;TrustServerCertificate=True;MultipleActiveResultSets=true"

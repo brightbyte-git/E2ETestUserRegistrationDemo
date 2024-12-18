@@ -43,9 +43,6 @@ public class DockerComposeFixture
     
     private void WaitForSqlServer()
     {
-        //TODO: research why localhost 1432 needs to be used
-        // TODO: Ensure connection string is read from environment variable.
-        
         // Wait for the "TestE2EDemoDatabase created successfully." log message
         bool isDatabaseReady = _containerHealthCheck.WaitForLogContainerMessage("sql-cmd-container", "TestE2EDemoDatabase created successfully.");
     

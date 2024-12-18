@@ -44,6 +44,7 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposabl
     [Fact]
     public async Task RegisterUser_ShouldNavigateToLoginAfterSuccessfulRegistration()
     {
+        
         // Arrange
         _driver.Navigate().GoToUrl("http://localhost:3000/register"); // URL of your React app
         

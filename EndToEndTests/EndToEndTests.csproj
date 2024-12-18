@@ -26,11 +26,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="mssql_scripts\" />
+      <ProjectReference Include="..\BackendAPI\BackendAPI.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BackendAPI\BackendAPI.csproj" />
+      <None Update="appsettings.EndToEndTest.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
