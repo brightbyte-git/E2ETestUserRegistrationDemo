@@ -15,14 +15,14 @@ public class E2EDemoDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        // Configure Tenant composite primary key
-        modelBuilder.Entity<Tenant>().HasKey(t => new { t.Id, t.Name });
-        
-        // Configure Tenant relationships
+
+        // Primary Key
         modelBuilder.Entity<Tenant>()
-            .HasMany(t => t.Users)
-            .WithOne(u => u.Tenant)
-            .HasForeignKey(u => new { u.TenantId, u.Organisation });
+            .HasKey(t => t.Id);
+
+        // Unique Constraint for Name
+        modelBuilder.Entity<Tenant>()
+            .HasIndex(t => t.Name)
+            .IsUnique();
     }
 }

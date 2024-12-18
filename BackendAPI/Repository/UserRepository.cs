@@ -42,7 +42,7 @@ public async Task<bool> RegisterUserAsync(UserRegistrationDto registrationDto)
 
         if (tenant != null)
         {
-            throw new InvalidOperationException($"A tenant with the name '{registrationDto.Organisation}' already exists.");
+            throw new InvalidOperationException($"An organisation with the name '{registrationDto.Organisation}' already exists.");
         }
 
         // Create a new tenant
