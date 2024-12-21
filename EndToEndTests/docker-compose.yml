@@ -17,7 +17,7 @@ services:
     image: mcr.microsoft.com/mssql-tools:latest
     container_name: sql-cmd-container
     stdin_open: true
-    platform: linux/amd64
+    platform: linux/amd64 # Specifiy Amd64 platform if running on ARM 64 chip
     volumes:
       - ./mssql_scripts:/mssql_scripts
       - ./check-sql.sh:/check-sql.sh

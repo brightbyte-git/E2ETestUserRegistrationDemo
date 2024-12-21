@@ -1,3 +1,4 @@
+using System.Text;
 using BackendAPI;
 using BackendAPI.Model;
 using BackendAPI.Repository;
@@ -5,6 +6,7 @@ using EndToEndTests.Fixtures;
 using EndToEndTests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -12,7 +14,7 @@ using SeleniumExtras.WaitHelpers;
 
 namespace EndToEndTests;
 
-public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposable
+public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixture<CustomWebApplicationFactory<Program>>, IDisposable
 {
     private readonly IWebDriver _driver;
     private readonly E2EDemoDbContext _context;
@@ -22,7 +24,7 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposabl
     private readonly DatabaseFixture _databaseFixture;
     private readonly CustomWebApplicationFactory<Program> _factory;
     
-    public RegistrationTests(DockerComposeFixture dockerComposeFixture)
+    public RegistrationTests(DockerComposeFixture dockerComposeFixture,  CustomWebApplicationFactory<Program> factory)
     {
         // Initialize the Chrome WebDriver
         _driver = new ChromeDriver();
@@ -34,11 +36,13 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposabl
 
         // Pass the connection string to the DatabaseFixture
         _databaseFixture = new DatabaseFixture(connectionString);
-        _factory = new CustomWebApplicationFactory<Program>(connectionString);
+        // _factory = new CustomWebApplicationFactory<Program>(connectionString);
 
         // Access the context and repositories from the DatabaseFixture
         _context = _databaseFixture.Context;
         _userRepository = _databaseFixture.UserRepository;
+        _client = factory.CreateClient();
+        // _client = factory.CreateClient();
     }
 
     [Fact]
@@ -54,7 +58,7 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposabl
         var confirmPasswordInput = _driver.FindElement(By.Name("confirmPassword"));
         var submitButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
 
-        string email = "testuser2@example.com";
+        string email = "testuser@example.com";
         string password = "Password123";
         string organisation = "Test Organisation 2";
         bool isInvited = false;
@@ -95,7 +99,7 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposabl
         Assert.Equal(registrationDto.Email, user.Email);
         Assert.Equal(tenant.Id, user.TenantId); // Check if TenantId matches
     }
-
+    
     public void Dispose()
     {
         // Cleanup after tests
