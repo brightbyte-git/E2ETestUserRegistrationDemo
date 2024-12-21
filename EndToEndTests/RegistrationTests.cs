@@ -14,7 +14,7 @@ using SeleniumExtras.WaitHelpers;
 
 namespace EndToEndTests;
 
-public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixture<CustomWebApplicationFactory<Program>>, IDisposable
+public class RegistrationTests : IClassFixture<DockerComposeFixture>, IDisposable
 {
     private readonly IWebDriver _driver;
     private readonly E2EDemoDbContext _context;
@@ -22,9 +22,8 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixt
     private readonly HttpClient _client;
     private readonly DockerComposeFixture _dockerComposeFixture;
     private readonly DatabaseFixture _databaseFixture;
-    private readonly CustomWebApplicationFactory<Program> _factory;
     
-    public RegistrationTests(DockerComposeFixture dockerComposeFixture,  CustomWebApplicationFactory<Program> factory)
+    public RegistrationTests(DockerComposeFixture dockerComposeFixture)
     {
         // Initialize the Chrome WebDriver
         _driver = new ChromeDriver();
@@ -41,8 +40,6 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixt
         // Access the context and repositories from the DatabaseFixture
         _context = _databaseFixture.Context;
         _userRepository = _databaseFixture.UserRepository;
-        _client = factory.CreateClient();
-        // _client = factory.CreateClient();
     }
 
     [Fact]

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EndToEndTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57bb65aa9d8de06d83510142468393daf9ab5dec")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0c8991f0b3f4efdc6a49b096332ddaec40715b35")]
 [assembly: System.Reflection.AssemblyProductAttribute("EndToEndTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EndToEndTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
