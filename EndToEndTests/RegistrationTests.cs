@@ -14,7 +14,8 @@ using SeleniumExtras.WaitHelpers;
 
 namespace EndToEndTests;
 
-public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixture<CustomWebApplicationFactory<Program>>, IDisposable
+[Collection("Registration Tests Collection")]
+public class RegistrationTests
 {
     private readonly IWebDriver _driver;
     private readonly E2EDemoDbContext _context;
@@ -24,25 +25,15 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixt
     private readonly DatabaseFixture _databaseFixture;
     private readonly CustomWebApplicationFactory<Program> _factory;
     
-    public RegistrationTests(DockerComposeFixture dockerComposeFixture,  CustomWebApplicationFactory<Program> factory)
+    public RegistrationTests(RegistrationTestsCollectionFixture fixture)
     {
-        // Initialize the Chrome WebDriver
-        _driver = new ChromeDriver();
-
-        _dockerComposeFixture = dockerComposeFixture;
-
-        // Use the helper to get the connection string
-        string connectionString = ConfigurationHelper.GetConnectionString("E2ETestsConnection");
-
-        // Pass the connection string to the DatabaseFixture
-        _databaseFixture = new DatabaseFixture(connectionString);
-        // _factory = new CustomWebApplicationFactory<Program>(connectionString);
-
-        // Access the context and repositories from the DatabaseFixture
-        _context = _databaseFixture.Context;
-        _userRepository = _databaseFixture.UserRepository;
-        _client = factory.CreateClient();
-        // _client = factory.CreateClient();
+        _driver = fixture.WebDriver;
+        _context = fixture.DbContext;
+        _userRepository = fixture.UserRepository;
+        _client = fixture.HttpClient;
+        _dockerComposeFixture = fixture.DockerComposeFixture;
+        _databaseFixture = fixture.DatabaseFixture;
+        _factory = fixture.Factory;
     }
 
     [Fact]
@@ -100,11 +91,68 @@ public class RegistrationTests : IClassFixture<DockerComposeFixture>, IClassFixt
         Assert.Equal(tenant.Id, user.TenantId); // Check if TenantId matches
     }
     
-    public void Dispose()
+    [Fact]
+    public async Task RegisterUser_ShouldDisplayErrorForDuplicateTenant()
     {
-        // Cleanup after tests
-        _driver.Quit();
-        _dockerComposeFixture.StopDockerCompose();
-        _databaseFixture.Dispose();
+        
+        // Arrange
+        var registrationDto = new UserRegistrationDto
+        {
+            Email = "testuser2@example.com",
+            Password = "securepassword",
+            Organisation = "TestOrganisation2",
+            IsInvited = false
+        };
+
+        var jsonContent = JsonConvert.SerializeObject(registrationDto);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await _client.PostAsync("/api/User/register", content);
+        
+        response.EnsureSuccessStatusCode(); // Ensure we got a 2xx status code
+        
+        // Verify tenant was created
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Name == registrationDto.Organisation);
+        Assert.NotNull(tenant); // Ensure tenant is not null
+        
+     
+        // // Prepare data for new registration attempt
+        // string newEmail = "newuser@example.com";
+        // string newPassword = "Password123";
+        // string duplicateOrganisation = preExistingOrganisation; // Same as the existing tenant
+        //
+        // // Act: Perform UI automation for registration
+        _driver.Navigate().GoToUrl("http://localhost:3000/register"); // URL of your React app
+        
+        var emailInput = _driver.FindElement(By.Name("email"));
+        var organisationInput = _driver.FindElement(By.Name("organisation"));
+        var passwordInput = _driver.FindElement(By.Name("password"));
+        var confirmPasswordInput = _driver.FindElement(By.Name("confirmPassword"));
+        var submitButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
+        
+        emailInput.SendKeys("testuser3@example.com");
+        organisationInput.SendKeys("TestOrganisation2");
+        passwordInput.SendKeys("Test101*&");
+        confirmPasswordInput.SendKeys("Test101*&");
+        
+        submitButton.Click();
+        
+        // Wait for error message to appear
+        var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+        var errorMessageElement = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("p.text-red-500"))); // Replace with your error message selector
+        
+        // Assert
+        Assert.NotNull(errorMessageElement); // Ensure the error message is displayed
+        Assert.Contains("An organisation with the name 'TestOrganisation2' already exists.", errorMessageElement.Text); // Verify error message content
+        
+        // Verify the database remains unchanged
+        // var duplicateTenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Name == duplicateOrganisation);
+        // Assert.NotNull(duplicateTenant); // The tenant should exist (pre-created one)
+        // // Assert.Equal(preExistingTenant.Id, duplicateTenant.Id); // Ensure it's the same tenant
+        //
+        // var duplicateUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == newEmail);
+        // Assert.Null(duplicateUser); // No new user should be created
     }
+    
 }
