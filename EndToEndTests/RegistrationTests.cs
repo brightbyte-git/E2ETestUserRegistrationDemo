@@ -39,7 +39,6 @@ public class RegistrationTests
     [Fact]
     public async Task RegisterUser_ShouldNavigateToLoginAfterSuccessfulRegistration()
     {
-        
         // Arrange
         _driver.Navigate().GoToUrl("http://localhost:3000/register"); // URL of your React app
         
@@ -94,7 +93,6 @@ public class RegistrationTests
     [Fact]
     public async Task RegisterUser_ShouldDisplayErrorForDuplicateTenant()
     {
-        
         // Arrange
         var registrationDto = new UserRegistrationDto
         {
@@ -116,12 +114,6 @@ public class RegistrationTests
         var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Name == registrationDto.Organisation);
         Assert.NotNull(tenant); // Ensure tenant is not null
         
-     
-        // // Prepare data for new registration attempt
-        // string newEmail = "newuser@example.com";
-        // string newPassword = "Password123";
-        // string duplicateOrganisation = preExistingOrganisation; // Same as the existing tenant
-        //
         // // Act: Perform UI automation for registration
         _driver.Navigate().GoToUrl("http://localhost:3000/register"); // URL of your React app
         
@@ -145,14 +137,6 @@ public class RegistrationTests
         // Assert
         Assert.NotNull(errorMessageElement); // Ensure the error message is displayed
         Assert.Contains("An organisation with the name 'TestOrganisation2' already exists.", errorMessageElement.Text); // Verify error message content
-        
-        // Verify the database remains unchanged
-        // var duplicateTenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Name == duplicateOrganisation);
-        // Assert.NotNull(duplicateTenant); // The tenant should exist (pre-created one)
-        // // Assert.Equal(preExistingTenant.Id, duplicateTenant.Id); // Ensure it's the same tenant
-        //
-        // var duplicateUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == newEmail);
-        // Assert.Null(duplicateUser); // No new user should be created
     }
     
 }
