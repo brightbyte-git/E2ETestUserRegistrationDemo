@@ -1,5 +1,6 @@
 using BackendAPI;
 using BackendAPI.Repository;
+using EndToEndTests.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,17 +12,10 @@ public class DatabaseFixture : IDisposable
     public E2EDemoDbContext Context { get; private set; }
     public UserRepository UserRepository { get; private set; }
 
-    public DatabaseFixture(string connectionString)
+    public DatabaseFixture(IConfiguration configuration)
     {
-        var builder = WebApplication.CreateBuilder(new string[] { });
-
-        // Clear default configuration sources
-        builder.Configuration.Sources.Clear();
-
-        builder.Configuration
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.EndToEndTest.json", optional: false, reloadOnChange: true)
-            .AddEnvironmentVariables();
+        // Retrieve the connection string from the configuration
+        string connectionString = ConfigurationHelper.GetConnectionString("E2ETestsConnection");
 
         var options = new DbContextOptionsBuilder<E2EDemoDbContext>()
             .UseSqlServer(connectionString)
@@ -32,7 +26,7 @@ public class DatabaseFixture : IDisposable
         Context.Database.Migrate();
         Context.Database.EnsureCreated();
 
-        UserRepository = new UserRepository(Context, builder.Configuration);
+        UserRepository = new UserRepository(Context, configuration); // Pass configuration if needed
     }
 
     public void Dispose()
