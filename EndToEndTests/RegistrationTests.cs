@@ -105,38 +105,46 @@ public class RegistrationTests
         var jsonContent = JsonConvert.SerializeObject(registrationDto);
         var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-        // Act
+        // Act: Register the first user
         var response = await _client.PostAsync("/api/User/register", content);
-        
+
         response.EnsureSuccessStatusCode(); // Ensure we got a 2xx status code
-        
+
         // Verify tenant was created
         var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Name == registrationDto.Organisation);
         Assert.NotNull(tenant); // Ensure tenant is not null
-        
-        // // Act: Perform UI automation for registration
+
+        // Act: Attempt to register a duplicate user with the same organisation
         _driver.Navigate().GoToUrl("http://localhost:3000/register"); // URL of your React app
-        
+
         var emailInput = _driver.FindElement(By.Name("email"));
         var organisationInput = _driver.FindElement(By.Name("organisation"));
         var passwordInput = _driver.FindElement(By.Name("password"));
         var confirmPasswordInput = _driver.FindElement(By.Name("confirmPassword"));
         var submitButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
-        
+
         emailInput.SendKeys("testuser3@example.com");
         organisationInput.SendKeys("TestOrganisation2");
         passwordInput.SendKeys("Test101*&");
         confirmPasswordInput.SendKeys("Test101*&");
-        
+
         submitButton.Click();
-        
+
         // Wait for error message to appear
         var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
         var errorMessageElement = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("p.text-red-500"))); // Replace with your error message selector
-        
-        // Assert
+
+        // Assert: Verify error message is displayed
         Assert.NotNull(errorMessageElement); // Ensure the error message is displayed
         Assert.Contains("An organisation with the name 'TestOrganisation2' already exists.", errorMessageElement.Text); // Verify error message content
+
+        // Assert: Verify duplicate tenant was not created
+        var duplicateTenant = await _context.Tenants.CountAsync(t => t.Name == "TestOrganisation2");
+        Assert.Equal(1, duplicateTenant); // Ensure there is only one tenant with the name
+
+        // Assert: Verify user details were not added
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == "testuser3@example.com");
+        Assert.Null(user); // Ensure user does not exist in the database
     }
     
 }
