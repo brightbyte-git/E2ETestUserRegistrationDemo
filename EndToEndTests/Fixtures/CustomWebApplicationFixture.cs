@@ -9,13 +9,6 @@ namespace EndToEndTests.Fixtures;
 
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
-    private readonly string _connectionString;
-
-    // public CustomWebApplicationFactory(string connectionString)
-    // {
-    //     _connectionString = connectionString;
-    // }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         
@@ -29,9 +22,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         
         builder.ConfigureServices((context, services) =>
         {
-            
             var connectionString = context.Configuration.GetConnectionString("E2ETestsConnection");
-
             
             // Remove the existing DbContext configuration
             var serviceDescriptor = services.SingleOrDefault(
