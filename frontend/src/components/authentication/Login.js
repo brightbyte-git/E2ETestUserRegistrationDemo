@@ -3,7 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-    
+    const navigate = useNavigate(); // Initialize the navigate function
+
+    const handleRegisterClick = () => {
+        navigate("/register"); // Navigate to the /register page
+    };
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-neutral-900 text-neutral-50">
             <div className="w-full max-w-md p-8 bg-neutral-800 rounded shadow-md">
@@ -35,6 +40,7 @@ const Login = () => {
                     </button>
                 </form>
                 <button
+                    onClick={handleRegisterClick} // Attach the click handler here
                     className="w-full py-2 mt-4 bg-gray-500 rounded text-white font-semibold hover:bg-gray-600 transition-colors"
                 >
                     Register
