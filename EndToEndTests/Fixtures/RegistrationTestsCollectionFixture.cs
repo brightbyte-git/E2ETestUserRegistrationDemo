@@ -48,8 +48,8 @@ public class RegistrationTestsCollectionFixture : IDisposable
     {
         WebDriver.Quit();
         WebDriver.Dispose();
-        DockerComposeFixture.StopDockerCompose();
-        DatabaseFixture.Dispose();
+        // DockerComposeFixture.StopDockerCompose();
+        // DatabaseFixture.Dispose();
         Factory.Dispose();
     }
 }
