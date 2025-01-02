@@ -42,6 +42,7 @@ public class RegistrationTests
         // Arrange
         _driver.Navigate().GoToUrl("http://localhost:3000/register"); // URL of your React app
         
+        // Get html elements of front end registration input boxes
         var emailInput = _driver.FindElement(By.Name("email"));
         var organisationInput = _driver.FindElement(By.Name("organisation"));
         var passwordInput = _driver.FindElement(By.Name("password"));
@@ -109,6 +110,8 @@ public class RegistrationTests
         var response = await _client.PostAsync("/api/User/register", content);
 
         response.EnsureSuccessStatusCode(); // Ensure we got a 2xx status code
+        
+        // TODO: Also write an assertion check to the Users table to ensure the registered user has been added
 
         // Verify tenant was created
         var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Name == registrationDto.Organisation);
