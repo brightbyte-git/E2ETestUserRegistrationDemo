@@ -94,6 +94,10 @@ public class RegistrationTests
     [Fact]
     public async Task RegisterUser_ShouldDisplayErrorForDuplicateTenant()
     {
+        
+        // TODO: POST API user registration call may not need to be carried out as a user was already registered in the last test and
+        // TODO: the dispose methods are not called until after all tests in this class file have been executed.
+        
         // Arrange
         var registrationDto = new UserRegistrationDto
         {
