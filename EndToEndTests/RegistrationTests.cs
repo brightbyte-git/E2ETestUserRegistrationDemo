@@ -51,7 +51,7 @@ public class RegistrationTests
 
         string email = "testuser@example.com";
         string password = "Password123";
-        string organisation = "Test Organisation 2";
+        string organisation = "Test Organisation";
         bool isInvited = false;
 
         var registrationDto = new UserRegistrationDto
@@ -94,26 +94,14 @@ public class RegistrationTests
     [Fact]
     public async Task RegisterUser_ShouldDisplayErrorForDuplicateTenant()
     {
-        
-        // TODO: POST API user registration call may not need to be carried out as a user was already registered in the last test and
-        // TODO: the dispose methods are not called until after all tests in this class file have been executed.
-        
         // Arrange
         var registrationDto = new UserRegistrationDto
         {
             Email = "testuser2@example.com",
             Password = "securepassword",
-            Organisation = "TestOrganisation2",
+            Organisation = "Test Organisation",
             IsInvited = false
         };
-
-        var jsonContent = JsonConvert.SerializeObject(registrationDto);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-        // Act: Register the first user
-        var response = await _client.PostAsync("/api/User/register", content);
-
-        response.EnsureSuccessStatusCode(); // Ensure we got a 2xx status code
         
         // TODO: Also write an assertion check to the Users table to ensure the registered user has been added
 
@@ -131,7 +119,7 @@ public class RegistrationTests
         var submitButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
 
         emailInput.SendKeys("testuser3@example.com");
-        organisationInput.SendKeys("TestOrganisation2");
+        organisationInput.SendKeys("Test Organisation");
         passwordInput.SendKeys("Test101*&");
         confirmPasswordInput.SendKeys("Test101*&");
 
@@ -143,10 +131,10 @@ public class RegistrationTests
 
         // Assert: Verify error message is displayed
         Assert.NotNull(errorMessageElement); // Ensure the error message is displayed
-        Assert.Contains("An organisation with the name 'TestOrganisation2' already exists.", errorMessageElement.Text); // Verify error message content
+        Assert.Contains("An organisation with the name 'Test Organisation' already exists.", errorMessageElement.Text); // Verify error message content
 
         // Assert: Verify duplicate tenant was not created
-        var duplicateTenant = await _context.Tenants.CountAsync(t => t.Name == "TestOrganisation2");
+        var duplicateTenant = await _context.Tenants.CountAsync(t => t.Name == "Test Organisation");
         Assert.Equal(1, duplicateTenant); // Ensure there is only one tenant with the name
 
         // Assert: Verify user details were not added
